@@ -74,3 +74,4 @@ results_txt.writelines(f'Correct prediction:{len([i for i in labels if i == True
 results_txt.writelines(f'Correct prediction:{len([i for i in labels if i != True])}\n')
 results_txt.writelines(f'The percentage error:{len([i for i in labels if i != True])/len(labels)}\n')
 results_txt.close()
+
