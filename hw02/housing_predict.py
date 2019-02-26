@@ -95,7 +95,5 @@ n_trans = poly_tranform.fit_transform(n)
 price = poly_ridge.predict(n_trans)
 print(f'The estimated value is : {price}')
 
-#%%
-
 
 

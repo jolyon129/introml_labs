@@ -5,6 +5,9 @@ import sklearn
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import KFold
+from K_nearest import K_nearest
 
 with open("reviewstrain.txt", "r") as file:
     X_train = []
@@ -19,52 +22,90 @@ with open("reviewstest.txt", "r") as file:
     y_test = []
     for line in file:
         X_test.append(line[1:].strip())
-        y_train.append(int(line[0]))
+        y_test.append(int(line[0]))
 
 corpus = X_train + X_test
 # %%
+# Tokenize
 vectorizer = CountVectorizer()
 vectorizer.fit(corpus)
-X_train = vectorizer.transform(X_train)
-X_test = vectorizer.transform(X_test)
+X_train_trans = vectorizer.transform(X_train)
+X_test_trans = vectorizer.transform(X_test)
+y_train = np.asarray(y_train)
+X_train = np.asarray(X_train)
+X_test = np.asarray(X_test)
+y_test = np.asarray(y_test)
 
 # %%
-
-
-class K_nearest:
-    def __init__(self, k, dis_func=None):
-        self.k = k
-        self.dis_func = dis_func
-
-    def fit(self, X_train):
-        self.X_train = X_train
-        return self
-
-    def predict(self, X):
-        y_hat = np.zeros(len(X)).reshape(-1, 1)
-        for i1 in range(len(X)):
-            distances = [None]*self.X_train.shape[0]
-            x_set = set(X[i1].indices)
-            for i2 in range(self.X_train.shape[0]):
-                inter = x_set.intersection(self.X_train[i2].indices)
-                distances[i2] = 1 / \
-                    len(inter) if len(inter) != 0 else self.X_train.shape[1]+1
-            sorted_idx = np.argsort(distances)
-            flag = 0
-            for i in range(5, len(sorted_idx)):
-                if distances[sorted_idx[i]] != distances[sorted_idx[i-1]]:
-                    break
-            flag = i
-            nearest_idx = sorted_idx[:flag]
-            nearest_labels = np.asarray(y_train)[[*nearest_idx]]
-            y_hat[i1] = 1 if nearest_labels.mean() >= 0.5 else 0
-        return y_hat
-
-# %%
-test = []
-test.append(X_test[17])
-test.append(X_test[18])
-k_n = K_nearest(1).fit(X_train)
-y_hat = k_n.predict(test)
+'''
+1.a.i)
+'''
+print(X_test[17])
+k_n = K_nearest(1).fit(X_train_trans, y_train)
+y_hat = k_n.predict(X_test_trans[17])
 print(y_hat)
 # %%
+# y_test_hat = k_n.predict(X_test_trans)
+# %%
+'''
+1.a.ii)
+'''
+# print('---------------------/n')
+# print('1-nearest classifier')
+# y_test = np.asarray(y_test).reshape(-1,1)
+# cf_matrix = confusion_matrix(y_test,y_test_hat)
+# print('The confusion matrix is ')
+# print(cf_matrix)
+# acc = (cf_matrix[0,0]+cf_matrix[1,1])/cf_matrix.sum()
+# true_positive = cf_matrix[1,1]/cf_matrix.sum()
+# false_positive = cf_matrix[0, 1]/cf_matrix.sum()
+# print(f'The accuracy is: {acc}.')
+# print(f'The true positive rate is: {true_positive}.')
+# print(f'The false positive is: {false_positive}.')
+
+#%%
+# k_n_5 = K_nearest(5).fit(X_train_trans)
+# print(X_test[17])
+# y_hat = k_n_5.predict(X_test_trans[17])
+# print(f"The predicted label is: {y_hat}")
+#%%
+# y_test_hat_2 = k_n_5.predict(X_test_trans)
+#%%
+# print('---------------------/n')
+# print('5-nearest classifier')
+# y_test_hat_2 = np.asarray(y_test_hat_2).reshape(-1, 1)
+# cf_matrix = confusion_matrix(y_test, y_test_hat_2)
+# print('The confusion matrix is ')
+# print(cf_matrix)
+# acc = (cf_matrix[0, 0]+cf_matrix[1, 1])/cf_matrix.sum()
+# true_positive = cf_matrix[1, 1]/cf_matrix.sum()
+# false_positive = cf_matrix[0, 1]/cf_matrix.sum()
+# print(f'The accuracy is: {acc}.')
+# print(f'The true positive rate is: {true_positive}.')
+# print(f'The false positive is: {false_positive}.')
+#%%
+
+# print(y_train.mean())
+# y_test = np.asarray(y_test)
+# y_hat_zero_r = np.ones_like(y_test)
+# cfm = confusion_matrix(y_test, y_hat_zero_r)
+# print('If we use the Zero-R classifier, the confusion matrix is:')
+# print(cfm)
+#%%
+kf = KFold(n_splits=5, random_state=42, shuffle=False)
+k_num = [3,7,99]
+accurancy = [None]
+for k in k_num:
+    a = 0
+    for train_idx, validation_idx in kf.split(X_train_trans):
+        # print(train_idx)
+        X_train_fold = X_train_trans[[*train_idx]]
+        y_train_fold = y_train[[*train_idx]]
+        X_val_fold = X_train_trans[[*validation_idx]]
+        y_val_fold = y_train[[*validation_idx]]
+        k_nn_c = K_nearest(k).fit(X_train_fold,y_train_fold)
+        y_val_fold_hat = k_nn_c.predict(X_val_fold)
+        a += (y_val_fold_hat ==y_val_fold).mean()        
+    accurancy.append(a/3)
+         
+#%%
