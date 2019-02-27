@@ -45,56 +45,56 @@ k_n = K_nearest(1).fit(X_train_trans, y_train)
 y_hat = k_n.predict(X_test_trans[17])
 print(y_hat)
 # %%
-# y_test_hat = k_n.predict(X_test_trans)
+y_test_hat = k_n.predict(X_test_trans)
 # %%
 '''
 1.a.ii)
 '''
-# print('---------------------/n')
-# print('1-nearest classifier')
-# y_test = np.asarray(y_test).reshape(-1,1)
-# cf_matrix = confusion_matrix(y_test,y_test_hat)
-# print('The confusion matrix is ')
-# print(cf_matrix)
-# acc = (cf_matrix[0,0]+cf_matrix[1,1])/cf_matrix.sum()
-# true_positive = cf_matrix[1,1]/cf_matrix.sum()
-# false_positive = cf_matrix[0, 1]/cf_matrix.sum()
-# print(f'The accuracy is: {acc}.')
-# print(f'The true positive rate is: {true_positive}.')
-# print(f'The false positive is: {false_positive}.')
+print('---------------------/n')
+print('1-nearest classifier')
+y_test = np.asarray(y_test).reshape(-1,1)
+cf_matrix = confusion_matrix(y_test,y_test_hat)
+print('The confusion matrix is ')
+print(cf_matrix)
+acc = (cf_matrix[0,0]+cf_matrix[1,1])/cf_matrix.sum()
+true_positive = cf_matrix[1,1]/cf_matrix.sum()
+false_positive = cf_matrix[0, 1]/cf_matrix.sum()
+print(f'The accuracy is: {acc}.')
+print(f'The true positive rate is: {true_positive}.')
+print(f'The false positive is: {false_positive}.')
 
 #%%
-# k_n_5 = K_nearest(5).fit(X_train_trans)
-# print(X_test[17])
-# y_hat = k_n_5.predict(X_test_trans[17])
-# print(f"The predicted label is: {y_hat}")
+k_n_5 = K_nearest(5).fit(X_train_trans, y_train)
+print(X_test[17])
+y_hat = k_n_5.predict(X_test_trans[17])
+print(f"The predicted label is: {y_hat}")
 #%%
-# y_test_hat_2 = k_n_5.predict(X_test_trans)
+y_test_hat_2 = k_n_5.predict(X_test_trans)
 #%%
-# print('---------------------/n')
-# print('5-nearest classifier')
-# y_test_hat_2 = np.asarray(y_test_hat_2).reshape(-1, 1)
-# cf_matrix = confusion_matrix(y_test, y_test_hat_2)
-# print('The confusion matrix is ')
-# print(cf_matrix)
-# acc = (cf_matrix[0, 0]+cf_matrix[1, 1])/cf_matrix.sum()
-# true_positive = cf_matrix[1, 1]/cf_matrix.sum()
-# false_positive = cf_matrix[0, 1]/cf_matrix.sum()
-# print(f'The accuracy is: {acc}.')
-# print(f'The true positive rate is: {true_positive}.')
-# print(f'The false positive is: {false_positive}.')
+print('---------------------/n')
+print('5-nearest classifier')
+y_test_hat_2 = np.asarray(y_test_hat_2).reshape(-1, 1)
+cf_matrix = confusion_matrix(y_test, y_test_hat_2)
+print('The confusion matrix is ')
+print(cf_matrix)
+acc = (cf_matrix[0, 0]+cf_matrix[1, 1])/cf_matrix.sum()
+true_positive = cf_matrix[1, 1]/cf_matrix.sum()
+false_positive = cf_matrix[0, 1]/cf_matrix.sum()
+print(f'The accuracy is: {acc}.')
+print(f'The true positive rate is: {true_positive}.')
+print(f'The false positive is: {false_positive}.')
 #%%
 
-# print(y_train.mean())
-# y_test = np.asarray(y_test)
-# y_hat_zero_r = np.ones_like(y_test)
-# cfm = confusion_matrix(y_test, y_hat_zero_r)
-# print('If we use the Zero-R classifier, the confusion matrix is:')
-# print(cfm)
+print(y_train.mean())
+y_test = np.asarray(y_test)
+y_hat_zero_r = np.ones_like(y_test)
+cfm = confusion_matrix(y_test, y_hat_zero_r)
+print('If we use the Zero-R classifier, the confusion matrix is:')
+print(cfm)
 #%%
 kf = KFold(n_splits=5, random_state=42, shuffle=False)
-k_num = [3,7,99]
-accurancy = [None]
+k_num = [3, 7, 99]
+accuracy = [None]
 for k in k_num:
     a = 0
     for train_idx, validation_idx in kf.split(X_train_trans):
@@ -103,9 +103,19 @@ for k in k_num:
         y_train_fold = y_train[[*train_idx]]
         X_val_fold = X_train_trans[[*validation_idx]]
         y_val_fold = y_train[[*validation_idx]]
-        k_nn_c = K_nearest(k).fit(X_train_fold,y_train_fold)
+        k_nn_c = K_nearest(k).fit(X_train_fold, y_train_fold)
         y_val_fold_hat = k_nn_c.predict(X_val_fold)
-        a += (y_val_fold_hat ==y_val_fold).mean()        
-    accurancy.append(a/3)
-         
+        a += (y_val_fold_hat == y_val_fold.reshape(-1, 1)).mean()
+    accuracy.append(a/kf.n_splits)
+print(f'The accuracy is listed: ')
+print(accuracy[1:])
+print('The best K should be 3')
 #%%
+k_nn_3 = K_nearest(3).fit(X_train_trans, y_train)
+y_test_hat = k_nn_3.predict(X_test_trans)
+cfm = confusion_matrix(y_test, y_test_hat)
+acc = (cfm[0, 0]+cfm[1, 1])/cfm.sum()
+print('The confusion matrix is ')
+print(cfm)
+print(f'The accuracy is: {acc}.')
+
