@@ -1,6 +1,6 @@
 # introml_labs
 
-This repo recores my answer to the labs from ECEGY-6143 Intro to Machine Learningm, [introml](https://github.com/sdrangan/introml). 
+This repo records my answer to the labs from ECEGY-6143 Intro to Machine Learningm, and programming question from CSGY-6923 [introml](https://github.com/sdrangan/introml). 
 
 
 
