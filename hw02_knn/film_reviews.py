@@ -94,9 +94,9 @@ print(cfm)
 #%%
 kf = KFold(n_splits=5, random_state=42, shuffle=False)
 k_num = [3, 7, 99]
-accuracy = [None]
-for k in k_num:
-    a = 0
+accuracy = [None]*3
+for k in range(len(k_num)):
+    a = []
     for train_idx, validation_idx in kf.split(X_train_trans):
         # print(train_idx)
         X_train_fold = X_train_trans[[*train_idx]]
@@ -105,17 +105,20 @@ for k in k_num:
         y_val_fold = y_train[[*validation_idx]]
         k_nn_c = K_nearest(k).fit(X_train_fold, y_train_fold)
         y_val_fold_hat = k_nn_c.predict(X_val_fold)
-        a += (y_val_fold_hat == y_val_fold.reshape(-1, 1)).mean()
-    accuracy.append(a/kf.n_splits)
+        cfm = confusion_matrix(y_val_fold, y_val_fold_hat)
+        acc = (cfm[0, 0]+cfm[1, 1])/cfm.sum()
+        a.append(acc)
+    accuracy[k] = (np.sum(a)/kf.n_splits)
 print(f'The accuracy is listed: ')
 print(accuracy[1:])
 print('The best K should be 3')
 #%%
-k_nn_3 = K_nearest(3).fit(X_train_trans, y_train)
-y_test_hat = k_nn_3.predict(X_test_trans)
+k_nn_7 = K_nearest(7).fit(X_train_trans, y_train)
+y_test_hat = k_nn_7.predict(X_test_trans)
 cfm = confusion_matrix(y_test, y_test_hat)
 acc = (cfm[0, 0]+cfm[1, 1])/cfm.sum()
 print('The confusion matrix is ')
 print(cfm)
 print(f'The accuracy is: {acc}.')
+
 

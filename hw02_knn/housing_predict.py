@@ -14,8 +14,6 @@ boston_data = load_boston()
 1.
 '''
 # %%
-
-
 def predict_report(X_train, y_train, X_test, y_test):
     reg = LinearRegression().fit(X_train, y_train)
     y_train_hat = reg.predict(X_train)
