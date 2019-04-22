@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Neural Network from Scratch
+# Code modified from https://github.com/adventuresinML/adventures-in-ml-code/blob/master/neural_network_tutorial.py
+# 
+# The notation in this website is almost the same as the notation we are using in class.  Instead of $a$ the author uses $h$, and instead of $N$, the author uses $m$. (I have modified the code below to use $a$ and $N$.)
+# 
+# Please read about this implementation starting at page 27 from the website listed above.
+
+# ## The first thing we will do is import all the libraries
+# 
+# We will be using the lower resolution MINST data set
+
+# In[2]:
+
 
 from sklearn.datasets import load_digits # The MNIST data set is in scikit learn data set
 from sklearn.preprocessing import StandardScaler  # It is important in neural networks to scale the date
@@ -16,17 +32,13 @@ def convert_y_to_vect(y):
 
 
 
+
 def f(z):
     return 1 / (1 + np.exp(-z))
-#     return  np.maximum(z, 0)
-#     return (np.exp(z) - np.exp(-z))/(np.exp(z) + np.exp(-z))
-    
 
 
 def f_deriv(z):
     return f(z) * (1 - f(z))
-#     return 1. * (z >= 0)
-#     return 1- (f(z))**2
 
 
 
@@ -40,6 +52,8 @@ def setup_and_init_weights(nn_structure):
     return W, b
 
 
+
+
 def init_tri_values(nn_structure):
     tri_W = {}
     tri_b = {}
@@ -47,7 +61,6 @@ def init_tri_values(nn_structure):
         tri_W[l] = np.zeros((nn_structure[l], nn_structure[l-1]))
         tri_b[l] = np.zeros((nn_structure[l],))
     return tri_W, tri_b
-
 
 
 def feed_forward(x, W, b):
@@ -60,6 +73,7 @@ def feed_forward(x, W, b):
     return a, z
 
 
+
 def calculate_out_layer_delta(y, a_out, z_out):
     # delta^(nl) = -(y_i - a_i^(nl)) * f'(z_i^(nl))
     return -(y-a_out) * f_deriv(z_out) 
@@ -68,6 +82,7 @@ def calculate_out_layer_delta(y, a_out, z_out):
 def calculate_hidden_delta(delta_plus_1, w_l, z_l):
     # delta^(l) = (transpose(W^(l)) * delta^(l+1)) * f'(z^(l))
     return np.dot(np.transpose(w_l), delta_plus_1) * f_deriv(z_l)
+
 
 
 
@@ -101,7 +116,7 @@ def train_nn(nn_structure, X, y, iter_num=3000, alpha=0.25):
                     tri_b[l] += delta[l+1]
         # perform the gradient descent step for the weights in each layer
         for l in range(len(nn_structure) - 1, 0, -1):
-            W[l] += -alpha * (1.0/N * tri_W[l]) + 0.001/2*W[l]
+            W[l] += -alpha * (1.0/N * tri_W[l]+ 0.001*W[l]) 
             b[l] += -alpha * (1.0/N * tri_b[l])
         # complete the average cost calculation
         avg_cost = 1.0/N * avg_cost
@@ -117,3 +132,4 @@ def predict_y(W, b, X, n_layers):
         a, z = feed_forward(X[i, :], W, b)
         y[i] = np.argmax(a[n_layers])
     return y
+
