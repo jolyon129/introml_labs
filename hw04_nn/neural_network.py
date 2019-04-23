@@ -128,8 +128,10 @@ def train_nn(nn_structure, X, y, iter_num=3000, alpha=0.25):
 def predict_y(W, b, X, n_layers):
     N = X.shape[0]
     y = np.zeros((N,))
+    y_pred = [None]*N
     for i in range(N):
         a, z = feed_forward(X[i, :], W, b)
         y[i] = np.argmax(a[n_layers])
-    return y
+        y_pred[i] = a[n_layers]
+    return y, y_pred
 
